@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 42;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -134,9 +134,16 @@
 /* Begin PBXProject section */
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = 1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "audiodevice" */;
-			compatibilityVersion = "Xcode 2.4";
+			compatibilityVersion = "Xcode 15.0";
+			developmentRegion = en;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+				Base,
+			);
 			mainGroup = 08FB7794FE84155DC02AAC07 /* audiodevice */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -170,7 +177,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = audiodevice_Prefix.pch;
 				INSTALL_PATH = "$(HOME)/bin";
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				PRODUCT_NAME = audiodevice;
+				SDKROOT = macosx;
 				ZERO_LINK = YES;
 			};
 			name = Debug;
@@ -187,7 +196,9 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = audiodevice_Prefix.pch;
 				INSTALL_PATH = "$(HOME)/bin";
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				PRODUCT_NAME = audiodevice;
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};
@@ -197,7 +208,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.4u.sdk";
 			};
 			name = Debug;
 		};
@@ -207,7 +218,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				PREBINDING = NO;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.4u.sdk";
 			};
 			name = Release;
 		};

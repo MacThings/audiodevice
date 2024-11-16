@@ -537,25 +537,92 @@ static const float kSystemVolumeConversionPower = 1.38;
 
 - (float)systemVolume
 {
-	long level = 0;
-	OSErr err = GetSysBeepVolume( &level );
-	if( err )
-	{
-		NSLog( @"Getting alert volume got error %d", err );
-		return NAN;
-	}
-	
-	float volume = pow( (float)level / (1 << 24), kSystemVolumeConversionPower );
-	return volume;
+    AudioObjectPropertyAddress propertyAddress = {
+        kAudioDevicePropertyVolumeScalar, // Korrekte Konstante
+        kAudioObjectPropertyScopeOutput,
+        kAudioObjectPropertyElementMaster
+    };
+
+    // Haupt-Audio-Gerät abrufen
+    AudioDeviceID defaultDevice;
+    UInt32 size = sizeof(defaultDevice);
+    AudioObjectPropertyAddress defaultDeviceAddress = {
+        kAudioHardwarePropertyDefaultOutputDevice,
+        kAudioObjectPropertyScopeGlobal,
+        kAudioObjectPropertyElementMaster
+    };
+
+    OSStatus status = AudioObjectGetPropertyData(kAudioObjectSystemObject,
+                                                 &defaultDeviceAddress,
+                                                 0,
+                                                 NULL,
+                                                 &size,
+                                                 &defaultDevice);
+    if (status != noErr) {
+        NSLog(@"Error getting default output device: %d", status);
+        return NAN;
+    }
+
+    // Lautstärke des Hauptgeräts abrufen
+    Float32 volume = 0;
+    size = sizeof(volume);
+    status = AudioObjectGetPropertyData(defaultDevice,
+                                        &propertyAddress,
+                                        0,
+                                        NULL,
+                                        &size,
+                                        &volume);
+    if (status != noErr) {
+        NSLog(@"Error getting volume for device: %d", status);
+        return NAN;
+    }
+
+    return volume; // Rückgabe des Lautstärke-Wertes (0.0 bis 1.0)
 }
 
-- (void)setSystemVolume: (float)vol
+- (void)setSystemVolume:(float)vol
 {
-	vol = pow( vol, 1.0/kSystemVolumeConversionPower );
-	OSErr err = SetSysBeepVolume( vol * (1 << 24) );
-	if( err )
-		NSLog( @"Setting alert volume got error %d", err );
-}	
+    // Lautstärke normalisieren (0.0 bis 1.0)
+    vol = fmaxf(0.0, fminf(vol, 1.0));
+
+    // Haupt-Audio-Gerät abrufen
+    AudioDeviceID defaultDevice;
+    UInt32 size = sizeof(defaultDevice);
+    AudioObjectPropertyAddress defaultDeviceAddress = {
+        kAudioHardwarePropertyDefaultOutputDevice,
+        kAudioObjectPropertyScopeGlobal,
+        kAudioObjectPropertyElementMaster
+    };
+
+    OSStatus status = AudioObjectGetPropertyData(kAudioObjectSystemObject,
+                                                 &defaultDeviceAddress,
+                                                 0,
+                                                 NULL,
+                                                 &size,
+                                                 &defaultDevice);
+    if (status != noErr) {
+        NSLog(@"Error getting default output device: %d", status);
+        return;
+    }
+
+    // Lautstärke setzen
+    AudioObjectPropertyAddress propertyAddress = {
+        kAudioDevicePropertyVolumeScalar,
+        kAudioObjectPropertyScopeOutput,
+        kAudioObjectPropertyElementMaster
+    };
+
+    Float32 volume = vol; // Skalarwert für Lautstärke (0.0 bis 1.0)
+    status = AudioObjectSetPropertyData(defaultDevice,
+                                        &propertyAddress,
+                                        0,
+                                        NULL,
+                                        sizeof(volume),
+                                        &volume);
+    if (status != noErr) {
+        NSLog(@"Error setting volume for device: %d", status);
+    }
+}
 
 #pragma mark -
 
